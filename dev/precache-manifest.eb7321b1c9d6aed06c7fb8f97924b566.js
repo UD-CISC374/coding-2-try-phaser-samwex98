@@ -28,15 +28,15 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/educational-phaser-game-template/devfavicon.ico"
   },
   {
-    "revision": "b53c56cc28f18b167e4d",
-    "url": "/educational-phaser-game-template/devgen.main.4c9e563da4ca054858e3.bundle.js"
+    "revision": "248d8f4a71107163615e",
+    "url": "/educational-phaser-game-template/devgen.main.33a413d1dd01538bf270.bundle.js"
   },
   {
     "revision": "5e69403aa42e950fedff",
     "url": "/educational-phaser-game-template/devgen.vendors.0805bb80903235d40eaf.bundle.js"
   },
   {
-    "revision": "9e49c70a47d070b3c7a7e124fee0ef14",
+    "revision": "d3a587e95988a08cce91cb796f52cd08",
     "url": "/educational-phaser-game-template/devindex.html"
   },
   {
