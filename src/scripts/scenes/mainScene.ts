@@ -14,12 +14,16 @@ export default class MainScene extends Phaser.Scene {
   explosion: Phaser.GameObjects.Sprite;
   explosionSound: Phaser.Sound.BaseSound;
   music: Phaser.Sound.BaseSound;
+  jumpSound: Phaser.Sound.BaseSound;
+  game_Over: boolean;
+  lastScore: number;
 
   constructor() {
     super({ key: 'MainScene' });
   }
 
   create() {
+    this.game_Over = false
     this.background = this.add.tileSprite(0, 0, this.sys.game.canvas.width,
       this.sys.game.canvas.height, "background");
     this.background.setOrigin(0, 0);
@@ -43,8 +47,9 @@ export default class MainScene extends Phaser.Scene {
     this.ship3.rotation = 1.56;
 
     this.score = 0;
-    this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE", 16);
+    this.scoreLabel = this.add.bitmapText(this.scale.width - 100 , 5, "pixelFont", "SCORE", 16);
 
+    this.jumpSound = this.sound.add("audio_beam");
     this.explosionSound = this.sound.add("audio_explosion");
     this.music = this.sound.add("music");
 
@@ -71,38 +76,22 @@ export default class MainScene extends Phaser.Scene {
 
   }
 
-  checker() {
+  gameOver() {
     this.explosion.x = this.player.x;
     this.explosion.y = this.player.y;
-    this.player.alpha = 0;
+    this.player.y = 10;
+    this.player.setGravityY(-400);
+    this.player.alpha=0;
     this.explosion.visible = true;
     this.explosion.play("explode");
-    this.explosion.destroy();
+    this.explosionSound.play();
     let gameoverText = this.add.text(this.scale.width/2, this.scale.height/2, 'Game Over');
     gameoverText.setDepth(1);
-  }
-
-  zeroPad(number, size) {
-    var stringNumber = String(number);
-    while (stringNumber.length, (size || 2)) {
-      stringNumber = "0" + stringNumber;
-    }
-    return stringNumber;
+    this.game_Over = true;
+    this.lastScore = this.score;
   }
 
 
-
-
-  hitEnemy(projectile, enemy) {
-
-
-    projectile.destroy();
-    this.resetShipPos(enemy);
-    this.score += 15;
-    var scoreFormated = this.zeroPad(this.score, 6);
-    this.scoreLabel.text = "SCORE " + scoreFormated;
-    this.explosionSound.play();
-  }
 
   moveShip(ship, speed) {
     ship.x -= speed;
@@ -130,13 +119,14 @@ export default class MainScene extends Phaser.Scene {
 
   resetShipPos(ship) {
     ship.x = this.sys.game.canvas.width;
-    var randomy = Phaser.Math.Between(this.sys.game.canvas.height / 2, this.sys.game.canvas.height - 20);
+    var randomy = Phaser.Math.Between(this.sys.game.canvas.height / 1.5, this.sys.game.canvas.height - 20);
     ship.y = randomy;
   }
 
-  endJump() {
-    this.player.setVelocityY(100);
+  updateScore(score) {
+    this.scoreLabel.text = String("SCORE " + score);
   }
+
 
   movePlayerManager() {
     if (this.cursorKeys.left.isDown) {
@@ -151,6 +141,7 @@ export default class MainScene extends Phaser.Scene {
 
     if (this.cursorKeys.up.isDown && this.player.y == 253.25) {
       this.player.setVelocityY(-250);
+      this.jumpSound.play();
     }
     if (this.cursorKeys.down.isDown) {
       this.player.setVelocityY(200);
@@ -165,8 +156,18 @@ export default class MainScene extends Phaser.Scene {
     this.background.tilePositionX += 0.5;
     this.movePlayerManager();
     
-    this.physics.overlap(this.player, this.ship1, this.checker, undefined, this);
-    this.physics.overlap(this.player, this.ship2, this.checker, undefined, this);
-    this.physics.overlap(this.player, this.ship3, this.checker, undefined, this);
+    this.physics.overlap(this.player, this.ship1, this.gameOver, undefined, this);
+    this.physics.overlap(this.player, this.ship2, this.gameOver, undefined, this);
+    this.physics.overlap(this.player, this.ship3, this.gameOver, undefined, this);
+    this.updateScore(this.score++);
+
+    if(this.game_Over){
+      this.updateScore(this.lastScore);
+      this.time.addEvent({
+        delay: 2300,
+        callback: () =>
+        this.scene.start('PreloadScene'),
+      });
+    }
   }
 }

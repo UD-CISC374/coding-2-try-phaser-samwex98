@@ -1,4 +1,5 @@
 export default class PreloadScene extends Phaser.Scene {
+  background: Phaser.GameObjects.Image;
   constructor() {
     super({ key: 'PreloadScene' });
   }
@@ -34,9 +35,13 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    
-    this.add.text(20, 20, "Loading game...");
-    this.scene.start('MainScene');
+    this.background = this.add.image(this.scale.width, this.scale.height, "background");
+    this.background.setOrigin(1, 1);
+    this.add.text(30, 50, "Alien Invasion", {fontSize: '24px', fill: '0#ffffff'});
+    this.add.text(22, 100, "Armed with only your jet boots and",{fontSize: '10px', fill: '0#ffffff'} );
+    this.add.text(20, 110, "determination, try and survive the",{fontSize: '10px', fill: '0#ffffff'} );
+    this.add.text(20, 120, "alien invasion for as long as you can!", {fontSize: '10px', fill: '0#ffffff'});
+    this.add.text(60, 200, "Start Game!", {fill: '0#ffffff'}).setInteractive().on('pointerdown', () => this.scene.start('MainScene'));
 
     this.anims.create({
       key: "ship1_anim",
